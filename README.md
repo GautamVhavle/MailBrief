@@ -48,6 +48,10 @@ xvfb-run -a npm run test:browser
 
 Summarisation is user-triggered by default. The extension downloads only the selected attachment, extracts its text, and sends that extracted text to the endpoint configured in Options after explicit consent. Raw attachment text is not retained by the extension. See [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
 
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, architecture, and pull-request guidance. Report vulnerabilities privately according to [SECURITY.md](SECURITY.md); do not publish secrets or confidential document content in issues.
+
 ## Release
 
 The packaged artifact is created with:
