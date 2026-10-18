@@ -1,0 +1,3 @@
+Weekly notes
+
+Shipped the reporting dashboard. Customer asked whether CSV export can include custom date ranges. Action item: Marco to investigate feasibility by Wednesday.

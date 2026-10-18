@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "MailBrief",
+  "version": "0.1.0",
+  "description": "User-triggered attachment summaries for Gmail and Outlook Web. Sends only extracted attachment text to your own OpenAI-compatible endpoint.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "MailBrief options"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.live.com/*"
+      ],
+      "js": ["mailbrief.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html",
+  "permissions": ["storage"],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*", "mailbrief.js"],
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.live.com/*"
+      ]
+    }
+  ]
+}

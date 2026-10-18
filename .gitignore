@@ -1,0 +1,7 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+mailbrief-*.zip
+*.log
+.DS_Store
