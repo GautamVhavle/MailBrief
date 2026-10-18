@@ -4,4 +4,6 @@ playwright-report/
 test-results/
 mailbrief-*.zip
 *.log
+.agents/
+skills-lock.json
 .DS_Store

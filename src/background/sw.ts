@@ -65,8 +65,12 @@ function handleSummarize(port: chrome.runtime.Port, message: PortMessage): void 
   const onProgress = (event: ProgressEvent): void => {
     sendMessage(port, { type: 'mailbrief/progress', id, ...event });
   };
+  const onStream = (delta: string): void => {
+    sendMessage(port, { type: 'mailbrief/stream', id, delta });
+    sendMessage(port, { type: 'mailbrief/partial', id, text: delta });
+  };
 
-  runSummarization({ id, fileName: message.fileName ?? '', mimeType: message.mimeType ?? '', chunks: message.chunks ?? [] }, controller.signal, onProgress)
+  runSummarization({ id, fileName: message.fileName ?? '', mimeType: message.mimeType ?? '', chunks: message.chunks ?? [] }, controller.signal, onProgress, onStream)
     .then((summary) => {
       sendMessage(port, { type: 'mailbrief/result', id, ok: true, summary });
     })

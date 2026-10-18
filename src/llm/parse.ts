@@ -81,3 +81,29 @@ export function parseConnectionTestResponse(raw: string): string {
   if (!trimmed) throw new MailBriefError('malformed', 'The endpoint returned an empty response.', false);
   return trimmed;
 }
+
+export function shortenExecutiveSummary(text: string, maxSentences = 4): string {
+  const trimmed = text.trim();
+  if (!trimmed) return '';
+  const sentences = trimmed.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [trimmed];
+  const cleaned = sentences.map((s) => s.trim()).filter(Boolean);
+  if (cleaned.length <= maxSentences) return cleaned.join(' ');
+  return cleaned.slice(0, maxSentences).join(' ');
+}
+
+export function shortenSummaryText(text: string, maxSentences = 4): string {
+  return shortenExecutiveSummary(text, maxSentences);
+}
+
+export function shortenSummary(summary: Summary, maxSentences = 4): Summary {
+  return {
+    ...summary,
+    executiveSummary: shortenExecutiveSummary(summary.executiveSummary, maxSentences),
+  };
+}
+
+// Aliases
+export const shorten = shortenSummary;
+export const shortenExecutive = shortenExecutiveSummary;
+export const truncateExecutiveSummary = shortenExecutiveSummary;
+export const truncateSummary = shortenSummary;

@@ -47,7 +47,8 @@ async function summariseChunks(
   fileName: string,
   chunks: Chunk[],
   signal: AbortSignal | undefined,
-  onProgress?: (event: ProgressEvent) => void
+  onProgress?: (event: ProgressEvent) => void,
+  onStream?: (delta: string) => void
 ): Promise<string> {
   const system = buildSystemPrompt(settings.prompt);
   const isMulti = chunks.length > 1;
@@ -55,7 +56,7 @@ async function summariseChunks(
   if (!isMulti) {
     onProgress?.({ phase: 'chunk', done: 1, total: 1 });
     const user = buildUserPrompt({ fileName, text: chunks[0].text, phase: 'chunk' });
-    return chatCompletion({ settings, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], signal });
+    return chatCompletion({ settings, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], signal, stream: true, onDelta: onStream });
   }
 
   const chunkSummaries: Array<{ index: number; text: string }> = [];
@@ -94,19 +95,22 @@ async function summariseChunks(
   }
 
   onProgress?.({ phase: 'combine', done: chunks.length + 1, total: chunks.length + 1 });
-  const combined = chunkSummaries.sort((a, b) => a.index - b.index).map((c) => c.text).join('\n\n---\n\n');
+  const combined = chunkSummaries.sort((a, b) => a.index - b.index).map((c) => c.text).join('\\n\\n---\\n\\n');
   const combineUser = buildUserPrompt({ fileName, text: combined, phase: 'combine' });
   return chatCompletion({
     settings,
     messages: [{ role: 'system', content: system }, { role: 'user', content: combineUser }],
     signal,
+    stream: true,
+    onDelta: onStream,
   });
 }
 
 export async function runSummarization(
   request: SummarizeRequest,
   signal?: AbortSignal,
-  onProgress?: (event: ProgressEvent) => void
+  onProgress?: (event: ProgressEvent) => void,
+  onStream?: (delta: string) => void
 ): Promise<Summary> {
   setDebugLogging(true);
   const settings = await loadSettings();
@@ -120,8 +124,9 @@ export async function runSummarization(
   signal?.throwIfAborted();
 
   try {
-    const raw = await summariseChunks(settings, request.fileName, request.chunks, signal, onProgress);
+    const raw = await summariseChunks(settings, request.fileName, request.chunks, signal, onProgress, onStream);
     signal?.throwIfAborted();
+    onProgress?.({ phase: 'finish', done: 1, total: 1 });
     const summary = parseSummaryResponse(raw, request.fileName);
     logger.info('summarisation completed', { fileName: request.fileName });
     return summary;

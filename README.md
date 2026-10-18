@@ -36,6 +36,12 @@ MailBrief adds a **Summarise** action beside supported attachments in Gmail and 
 
 MailBrief detects supported attachments and places a summarisation action beside each file. The current fixture demonstrates PDF, scanned PDF, missing-link, and large-file states.
 
+### Summary modal
+
+![MailBrief summary modal](docs/screenshots/modal-summary.png)
+
+Clicking Summarise opens a compact centered modal with the short executive summary first, key points, and action items. Secondary sections sit behind tabs. The modal shows a processing state with an animated left-to-right progress bar and stage labels: Fetching, Reading, Summarising, Finishing. When the endpoint supports OpenAI-compatible SSE streaming, partial summary text streams into the dialog; otherwise the final result renders on completion. Cancel, close, copy, and retry controls are available.
+
 ### Configure your endpoint
 
 ![MailBrief options page](docs/screenshots/options-settings.png)

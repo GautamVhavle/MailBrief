@@ -19,10 +19,13 @@ interface PortResponse {
   ok?: boolean;
   summary?: Summary;
   error?: MailBriefErrorShape;
-  phase?: 'chunk' | 'combine';
+  phase?: 'chunk' | 'combine' | 'finish';
   done?: number;
   total?: number;
   granted?: boolean;
+  delta?: string;
+  text?: string;
+  partial?: string;
 }
 
 function requestId(): string {
@@ -33,6 +36,7 @@ interface PendingRequest {
   resolve: (summary: Summary) => void;
   reject: (err: Error) => void;
   onProgress?: (event: StageEvent) => void;
+  onStream?: (delta: string) => void;
   onError?: (error: MailBriefErrorShape) => void;
 }
 
@@ -53,7 +57,18 @@ class Summarizer {
     const entry = this.pending.get(message.id);
     if (!entry) return;
     if (message.type === 'mailbrief/progress') {
-      entry.onProgress?.({ stage: message.phase === 'combine' ? 'combine' : 'chunk', done: message.done ?? 0, total: message.total ?? 1 });
+      const stage: StageEvent['stage'] =
+        message.phase === 'combine'
+          ? 'combine'
+          : message.phase === 'finish'
+            ? 'finishing'
+            : 'chunk';
+      entry.onProgress?.({ stage, done: message.done ?? 0, total: message.total ?? 1 });
+      return;
+    }
+    if (message.type === 'mailbrief/stream' || message.type === 'mailbrief/partial') {
+      const delta = message.delta ?? message.text ?? message.partial ?? '';
+      if (delta) entry.onStream?.(delta);
       return;
     }
     if (message.type !== 'mailbrief/result') return;
@@ -71,14 +86,17 @@ class Summarizer {
     fileName: string,
     mimeType: string,
     url: string | null,
-    onProgress: (p: StageEvent) => void
+    onProgress: (p: StageEvent) => void,
+    onStream?: (delta: string) => void,
+    signal?: AbortSignal
   ): Promise<Summary> {
     if (!url) {
       throw new MailBriefError('missing-url', 'No download URL was found for this attachment. Gmail/Outlook may have changed their layout.', false);
     }
     onProgress({ stage: 'fetching' });
     const settings = await loadSettings();
-    const response = await fetch(url);
+    if (signal?.aborted) throw new MailBriefError('cancelled', 'Cancelled.', true);
+    const response = await fetch(url, { signal });
     if (!response.ok) {
       throw new MailBriefError('network', `The attachment could not be downloaded (HTTP ${response.status}).`, true);
     }
@@ -104,6 +122,7 @@ class Summarizer {
         resolve,
         reject,
         onProgress,
+        onStream,
       });
       port.postMessage({
         type: 'mailbrief/summarize',
@@ -116,8 +135,13 @@ class Summarizer {
   }
 
   cancelAll(): void {
-    for (const reqId of this.pending.keys()) {
-      this.port?.postMessage({ type: 'mailbrief/cancel', id: reqId });
+    for (const [reqId, entry] of [...this.pending.entries()]) {
+      try {
+        this.port?.postMessage({ type: 'mailbrief/cancel', id: reqId });
+      } catch {
+        // ignore
+      }
+      entry.reject(new MailBriefError('cancelled', 'Cancelled.', true));
       this.pending.delete(reqId);
     }
   }
@@ -179,11 +203,12 @@ function mountFor(ref: AttachmentRef): void {
     url: ref.url,
     endpoint: settingsEndpoint,
     consentGiven: settingsConsentGiven,
-    onSummarize: (url, onProgress) => summarizer.summarize(ref.fileName, ref.mimeType, url, onProgress),
+    onSummarize: (url, onProgress, onStream, signal) => summarizer.summarize(ref.fileName, ref.mimeType, url, onProgress, onStream, signal),
     onError: (errorId, error) => {
       logger.warn('summarisation error', { id: errorId, kind: error.kind });
     },
     onConsentGrant: () => summarizer.grantConsent(),
+    onCancelRun: () => summarizer.cancelAll(),
     onDismiss: (dismissId: string) => {
       mountedRoots.delete(dismissId);
     },

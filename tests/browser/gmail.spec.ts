@@ -67,7 +67,7 @@ test.describe('gmail fixture', () => {
     const scannedCard = page.locator('[role="listitem"]', { hasText: 'scanned.pdf' });
     await scannedCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const errorCard = scannedCard.locator('.mbx-card', { hasText: 'ocr-required' });
+    const errorCard = page.locator('.mbx-card', { hasText: 'ocr-required' });
     await expect(errorCard).toBeVisible({ timeout: 30_000 });
     await expect(errorCard).toContainText('OCR');
   });
@@ -79,7 +79,7 @@ test.describe('gmail fixture', () => {
     const noLinkCard = page.locator('[role="listitem"]', { hasText: 'no-link.pdf' });
     await noLinkCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const errorCard = noLinkCard.locator('.mbx-card', { hasText: 'missing-url' });
+    const errorCard = page.locator('.mbx-card', { hasText: 'missing-url' });
     await expect(errorCard).toBeVisible({ timeout: 15_000 });
   });
 
@@ -97,7 +97,7 @@ test.describe('gmail fixture', () => {
     const firstCard = page.locator('[role="listitem"]', { hasText: 'large.txt' });
     await firstCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const errorCard = firstCard.locator('.mbx-card', { hasText: 'too-large' });
+    const errorCard = page.locator('.mbx-card', { hasText: 'too-large' });
     await expect(errorCard).toBeVisible({ timeout: 15_000 });
   });
 
@@ -109,7 +109,7 @@ test.describe('gmail fixture', () => {
     const firstCard = page.locator('[role="listitem"]', { hasText: 'q3-report.pdf' });
     await firstCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const errorCard = firstCard.locator('.mbx-card', { hasText: 'auth' });
+    const errorCard = page.locator('.mbx-card', { hasText: 'auth' });
     await expect(errorCard).toBeVisible({ timeout: 30_000 });
     await expect(errorCard).toContainText('API key');
   });
@@ -129,7 +129,7 @@ test.describe('gmail fixture', () => {
     const firstCard = page.locator('[role="listitem"]', { hasText: 'q3-report.pdf' });
     await firstCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const errorCard = firstCard.locator('.mbx-card', { hasText: 'timeout' });
+    const errorCard = page.locator('.mbx-card', { hasText: 'timeout' });
     await expect(errorCard).toBeVisible({ timeout: 20_000 });
     const retry = errorCard.locator('button', { hasText: 'Try again' });
     await expect(retry).toBeEnabled();

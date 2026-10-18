@@ -103,7 +103,7 @@ export interface SummarizeRequest {
 }
 
 export interface ProgressEvent {
-  phase: 'chunk' | 'combine';
+  phase: 'chunk' | 'combine' | 'finish';
   done: number;
   total: number;
 }

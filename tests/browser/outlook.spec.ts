@@ -16,7 +16,7 @@ test.describe('outlook fixture', () => {
     const docxCard = page.locator('[role="listitem"]', { hasText: 'contract.docx' });
     await docxCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const summaryCard = docxCard.locator('.mbx-card', { hasText: 'Summary' });
+    const summaryCard = page.locator('.mbx-card', { hasText: 'Summary' });
     await expect(summaryCard).toBeVisible({ timeout: 30_000 });
     await expect(summaryCard).toContainText('Q3 revenue grew 12 percent');
   });
@@ -29,7 +29,7 @@ test.describe('outlook fixture', () => {
     const txtCard = page.locator('[role="listitem"]', { hasText: 'notes.txt' });
     await txtCard.locator('.mbx-button', { hasText: 'Summarise' }).click();
 
-    const summaryCard = txtCard.locator('.mbx-card', { hasText: 'Summary' });
+    const summaryCard = page.locator('.mbx-card', { hasText: 'Summary' });
     await expect(summaryCard).toBeVisible({ timeout: 30_000 });
     await expect(summaryCard).toContainText('Q3 revenue grew 12 percent');
   });
