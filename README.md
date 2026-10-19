@@ -1,18 +1,19 @@
 <div align="center">
 
-# MailBrief
+<img src="public/mailbrief-logo.svg" alt="MailBrief logo" width="560" />
 
 ### Turn email attachments into clear, actionable briefs
 
-A privacy-first Chrome extension for Gmail and Outlook Web. Select an attachment, give consent, and receive a structured summary from any OpenAI-compatible model endpoint.
+A privacy-first Chrome extension for Gmail and Outlook Web. Select an attachment, give consent, and receive a compact brief from any OpenAI-compatible model endpoint.
 
 [![CI](https://github.com/GautamVhavle/MailBrief/actions/workflows/ci.yml/badge.svg)](https://github.com/GautamVhavle/MailBrief/actions/workflows/ci.yml)
-[![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
+[![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/tests-77%20unit%20%7C%2016%20browser-16A34A)](#verification)
+[![Unit tests](https://img.shields.io/badge/unit%20tests-89%20passing-16A34A)](#verification)
+[![Browser tests](https://img.shields.io/badge/browser%20tests-16%20passing-16A34A)](#verification)
 [![License](https://img.shields.io/badge/license-MIT-111827)](LICENSE)
 
-**[Install locally](#install-locally)** · **[See how it works](#how-it-works)** · **[Configure an endpoint](#configure-mailbrief)** · **[Contribute](CONTRIBUTING.md)** · **[Security](SECURITY.md)**
+[Install locally](#install-locally) · [See the flow](#how-it-works) · [Configure](#configure-mailbrief) · [Contribute](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 </div>
 
